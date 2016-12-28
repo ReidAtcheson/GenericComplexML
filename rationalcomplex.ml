@@ -28,7 +28,7 @@ module RationalComplex : Gencomplex.Sig  = struct
     type ret = num
     type imt = num
     type t   = { re : ret; im : imt;}
-    let precision = 1e-15
+    let precision = 1e-25
     let mk re im = {re=re;im=im;}
     let real c = c.re
     let imag c = c.im
@@ -49,16 +49,37 @@ module RationalComplex : Gencomplex.Sig  = struct
       let b=c.im in
       {re=minus_num a;im=minus_num b}
 
-		(*WARNING: implemented in floats for now. Must add iterative refinements*)
-    (* Use formula: sqrt(a+ib) = sqrt( (|S| + a)/2) + sgn(b)*sqrt( (|S| + b)/2) (b != 0)
-     *              sqrt(a)    = sqrt(|S|) i (a<0)
-     *              |S| = sqrt(a^2 + b^2) *)
-    let sqrt z = 
-      let rez = float_of_num z.re in
-      let imz = float_of_num z.im in
-      let zz  = {Complex.re=rez;im=imz} in
-      let sqrtz = Complex.sqrt zz in
-      mk (num_of_float sqrtz.Complex.re) (num_of_float sqrtz.Complex.im)
+    let sqrt_re_fl rez = 
+      let rezfl      = float_of_num rez in
+      let sqrt_guess = num_of_float (sqrt rezfl) in
+      if  eq_num rez (num_of_int 0)
+      then
+        sqrt_guess
+      else
+        let halfrez    = rez // (num_of_int 2) in
+        let threehalf  = (num_of_int 3) // (num_of_int 2) in
+        let inv_sqrt   = ref ((num_of_int 1) // (sqrt_guess)) in
+        inv_sqrt       := (!inv_sqrt) */ (threehalf -/ halfrez */ !inv_sqrt */ !inv_sqrt );
+        (num_of_int 1) // (!inv_sqrt)
+
+
+    let sqrt_c z = 
+      let a = z.re in
+      let b = z.im in
+      let s = sqrt_re_fl (real (mul (conj z) z)) in
+      if (eq_num b (num_of_int 0)) 
+      then
+        if (lt_num a (num_of_int 0))
+        then
+          mk (num_of_int 0) (sqrt_re_fl s)
+        else
+          mk (sqrt_re_fl s) (num_of_int 0)
+      else
+        let ur = sqrt_re_fl ((s +/ a) // (num_of_int 2)) in
+        let ui = (num_of_int (sign_num b)) */ sqrt_re_fl ( (s -/ a) // (num_of_int 2)) in
+        mk ur ui
+
+    let sqrt = sqrt_c
     let abs c = 
           sqrt (mul (conj c) c)
 
