@@ -214,14 +214,29 @@ module PropCheck (C : Sig) = struct
 
 
 
+    (*This test we have to be careful in case the incoming
+     * field is actually just Real. Simple check:
+       mk 5 5 == 5 --> is real
+       * *)
   let sqrt_works = 
     for i = 1 to ntests do
       D.(
-        let x = re (rf ()) + im ( rf()) in
-        let sqrtx = sqrt x in
-        let y = sqrtx*sqrtx in
-        let correct  = almost_equal x y tol in
-        if (correct) then () else print_endline "sqrt_works: Failed"
+        let testr = 5.0 in
+        let testi = 5.0 in
+        if (almost_equal ((re testr)+(im testi)) (re testr) tol) 
+        then
+          let z = re (rf ()) + im ( rf()) in
+          let x = z*z in
+          let sqrtx = sqrt x in
+          let y = sqrtx*sqrtx in
+          let correct  = almost_equal x y tol in
+          if (correct) then () else print_endline "sqrt_works (Real case): Failed"
+        else
+          let x = re (rf ()) + im ( rf()) in
+          let sqrtx = sqrt x in
+          let y = sqrtx*sqrtx in
+          let correct  = almost_equal x y tol in
+          if (correct) then () else print_endline "sqrt_works (Complex case): Failed"
       )
     done
 
