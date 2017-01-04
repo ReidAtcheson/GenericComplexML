@@ -38,11 +38,14 @@ module FloatComplex : Gencomplex.Sig with type ret=float with type imt=float  =
       let zz  = {Complex.re=rez;im=imz} in
       let sqrtz = Complex.sqrt zz in
       mk (sqrtz.Complex.re) (sqrtz.Complex.im)
-    let abs c = 
+    let abs c =  
       sqrt (mul (conj c) c)
 
 
     let almost_equal a b (tol:float) = (real (abs (add (neg b) a))) < tol
+
+    let compare x y = compare x y
+
       
 
     let zero   = {re=0.0;im=0.0}

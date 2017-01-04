@@ -33,6 +33,8 @@ module type Sig = sig
   val one  : t
   val almost_equal : t -> t -> float -> bool
 
+  (*Order which makes the real type an ordered subfield*)
+  val compare : ret -> ret -> int
 
   (*Convenience functions *)
   (* Convert complex number to string*)
@@ -47,6 +49,18 @@ module DSL (C : Sig) = struct
   let real = C.real
   let imag = C.imag
   let conj = C.conj
+  let ( <= ) x y = 
+    let c = C.compare x y in
+    if (c<=0) then true else false
+  let ( >= ) x y = 
+    let c = C.compare x y in
+    if (c>=0) then true else false
+  let ( < ) x y = 
+    let c = C.compare x y in
+    if (c<0) then true else false
+  let ( > ) x y = 
+    let c = C.compare x y in
+    if (c>0) then true else false
   let ( * ) = C.mul
   let ( + ) = C.add
   let ( / ) x y = C.mul (x) (C.inv y)
@@ -239,5 +253,8 @@ module PropCheck (C : Sig) = struct
           if (correct) then () else print_endline "sqrt_works (Complex case): Failed"
       )
     done
+
+
+
 
 end;;

@@ -1,5 +1,5 @@
 open Num
-module RationalComplex : Gencomplex.Sig  = struct
+module RationalComplex : Gencomplex.Sig  with type ret=num with type imt=num = struct
 
 
 
@@ -87,6 +87,7 @@ module RationalComplex : Gencomplex.Sig  = struct
     let almost_equal a b (tol:float) =  (float_of_num (real  (abs  (add (neg b)  a)))) < tol
     let zero   = {re=num_of_int 0;im=num_of_int 0}
     let one    = {re=num_of_int 1;im=num_of_int 0}
+    let compare x y = compare_num x y
     let to_string z = (string_of_num (real z)) ^ " + " ^ (string_of_num (imag z)) ^ "i"
 
     let re r = mk (num_of_float r) (num_of_int 0)

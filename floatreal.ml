@@ -26,6 +26,7 @@ module Real : Gencomplex.Sig with type t=float with type ret=float with type imt
     let abs    = abs_float 
 
 
+    let compare x y = compare x y
     let almost_equal a b (tol:float) = (real (abs (add (neg b) a))) < tol
   
 
